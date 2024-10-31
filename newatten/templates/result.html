@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System - Capture Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        .input-field {
+            margin-bottom: 15px;
+        }
+
+        .input-field button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .input-field button:hover {
+            background-color: #45a049;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+        }
+
+        p {
+            margin: 10px 0;
+        }
+
+        #video {
+            display: none;
+            width: 100%;
+            border: 1px solid #ccc;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        #spinner {
+            display: none;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Welcome, (studdent_name : {{ student_name }}) (Roll No: {{ roll_no }})</h1>
+    <p>Student ID: {{ student_id }}</p>
+
+    <!-- Camera Preview -->
+    <div>
+        <video id="video" autoplay></video>
+        <div class="input-field">
+            <button id="capture-btn">Capture Image</button>
+            <button id="mark-attendance-btn" disabled>Mark Attendance</button>
+        </div>
+    </div>
+
+    <!-- Hidden canvas to capture the image -->
+    <canvas id="canvas"></canvas>
+
+    <!-- Loading spinner -->
+    <div id="spinner">Loading...</div>
+
+    <!-- Result Messages -->
+    <div id="message"></div>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureBtn = document.getElementById('capture-btn');
+    const markAttendanceBtn = document.getElementById('mark-attendance-btn');
+    const messageDiv = document.getElementById('message');
+    const spinner = document.getElementById('spinner');
+
+    // Access the camera and display video stream
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            video.style.display = 'block'; // Show video stream
+        })
+        .catch(err => {
+            console.error("Error accessing camera: " + err);
+            messageDiv.innerHTML = "<p style='color:red;'>Error accessing camera. Please try again.</p>";
+        });
+
+    // Capture image when the button is clicked
+    captureBtn.addEventListener('click', () => {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Convert the captured image to Base64
+        const image_data = canvas.toDataURL('image/png');
+
+        // Show success message immediately
+        messageDiv.innerHTML = "<p style='color:green;'>Image captured!</p>";
+
+        // Enable the mark attendance button
+        markAttendanceBtn.disabled = false;
+
+        // Store the captured image
+        storeCapturedImage(image_data);
+    });
+
+    // Function to store the captured image
+    function storeCapturedImage(image_data) {
+        fetch('/store-captured-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image_data: image_data }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                messageDiv.innerHTML += "<p style='color:green;'>Captured image stored successfully!</p>";
+            } else {
+                messageDiv.innerHTML += "<p style='color:red;'>Error storing image: " + data.message + "</p>";
+            }
+        })
+        .catch(err => {
+            console.error("Error storing image: " + err);
+            messageDiv.innerHTML += "<p style='color:red;'>Error storing image. Please try again.</p>";
+        });
+    }
+
+    // Mark attendance
+    markAttendanceBtn.addEventListener('click', () => {
+        spinner.style.display = 'block';  // Show loading spinner
+
+        fetch('/mark-attendance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ roll_no: '{{ roll_no }}' }),  // Send the roll number for validation
+        })
+        .then(response => response.json())
+        .then(data => {
+            spinner.style.display = 'none';  // Hide loading spinner
+            if (data.success) {
+                window.location.href = "/attendance_success";  // Redirect to success page
+            } else {
+                window.location.href = "/attendance_unsuccessful";  // Redirect to unsuccessful page
+            }
+        })
+        .catch(err => {
+            spinner.style.display = 'none';  // Hide loading spinner
+            console.error("Error marking attendance: " + err);
+            messageDiv.innerHTML = "<p style='color:red;'>Error marking attendance. Please try again.</p>";
+        });
+    });
+</script>
+
+</body>
+</html>

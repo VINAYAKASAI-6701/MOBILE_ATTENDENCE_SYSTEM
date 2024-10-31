@@ -1,0 +1,8 @@
+2024/09/26 20:55:55 [warn] 35800#33844: "user" is not supported, ignored in C:\Users\praha\OneDrive\Desktop\newatten\nginx-1.27.1\nginx-1.27.1/conf/nginx.conf:2
+2024/09/26 20:55:55 [emerg] 35800#33844: cannot load certificate "C:\Users\praha\OneDrive\Desktop
+ewatten\cert\ssl\certs\cert.pem": BIO_new_file() failed (SSL: error:8000007B:system library::Unknown error:calling fopen(C:\Users\praha\OneDrive\Desktop
+ewatten\cert\ssl\certs\cert.pem, r) error:10080002:BIO routines::system lib)
+2024/09/26 21:06:05 [warn] 36328#9168: "user" is not supported, ignored in C:\Users\praha\OneDrive\Desktop\newatten\nginx-1.27.1\nginx-1.27.1/conf/nginx.conf:2
+2024/09/26 21:06:05 [emerg] 36328#9168: cannot load certificate "C:\Users\praha\OneDrive\Desktop
+ewatten\cert\ssl\certs\cert.pem": BIO_new_file() failed (SSL: error:8000007B:system library::Unknown error:calling fopen(C:\Users\praha\OneDrive\Desktop
+ewatten\cert\ssl\certs\cert.pem, r) error:10080002:BIO routines::system lib)

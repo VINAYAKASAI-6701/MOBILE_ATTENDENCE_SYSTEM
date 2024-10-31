@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi Network Login</title>
+    <link rel="stylesheet" href="./static/css/style.css">
+</head>
+<body>
+
+<div class="container">
+    <form id="loginForm" action="./submit-login" method="POST">
+        <h1>Login</h1>
+        <div class="input-field">
+            <label for="rollno">Roll No:</label>
+            <input type="text" id="rollno" name="rollno" required>
+        </div>
+        <div class="input-field">
+            <label for="student_id">Student ID:</label>
+            <input type="text" id="student_id" name="student_id" required>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+    </form>
+</div>
+
+</body>
+</html>
